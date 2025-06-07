@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>المحادثات - Talkgram</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Talkgram</title>
   <style>
     body {
       background-color: #121b22;
       color: white;
-      font-family: 'Segoe UI', sans-serif;
+      font-family: Arial, sans-serif;
       margin: 0;
       padding: 0;
     }
@@ -19,87 +19,118 @@
       font-size: 20px;
       font-weight: bold;
     }
-    .chat-list {
-      padding: 20px;
-    }
-    .chat {
-      background-color: #1f2c34;
-      border-bottom: 1px solid #2a3942;
-      padding: 15px;
-      border-radius: 8px;
-      margin-bottom: 10px;
+    .tab-bar {
       display: flex;
-      align-items: center;
+      justify-content: space-around;
+      background-color: #202c33;
+      border-top: 1px solid #333;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+    }
+    .tab-bar div {
+      padding: 10px 0;
+      width: 100%;
+      text-align: center;
+      color: #ccc;
       cursor: pointer;
     }
-    .chat img {
-      width: 45px;
-      height: 45px;
-      border-radius: 50%;
-      margin-left: 15px;
-    }
-    .chat .info {
-      flex-grow: 1;
-    }
-    .chat .info .name {
+    .tab-bar .active {
+      color: #00e676;
       font-weight: bold;
-      font-size: 16px;
     }
-    .chat .info .last-msg {
-      color: #ccc;
-      font-size: 14px;
+    .content {
+      padding: 20px;
+      padding-bottom: 80px;
+    }
+    .chat-box {
+      background-color: #1f2c34;
+      margin-bottom: 10px;
+      padding: 15px;
+      border-radius: 10px;
+      border: 1px solid #2c3e50;
+    }
+    .chat-name {
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: #00e676;
     }
   </style>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
 </head>
 <body>
-
-  <div class="header">مرحبا <span id="userName">...</span> 👋</div>
-
-  <div class="chat-list" id="chatList">
-    <!-- سيتم تعبئة المحادثات هنا -->
+  <div class="header">Talkgram</div>
+  <div class="content" id="screen">
+    <h2>مرحبا بك في Talkgram</h2>
+    <p>اختر تبويبا من الأسفل للتنقل بين الصفحات.</p>
+  </div>
+  <div class="tab-bar">
+    <div onclick="loadTab('chats')" id="tab-chats" class="active">المحادثات</div>
+    <div onclick="loadTab('status')" id="tab-status">الحالة</div>
+    <div onclick="loadTab('calls')" id="tab-calls">المكالمات</div>
+    <div onclick="loadTab('settings')" id="tab-settings">الإعدادات</div>
   </div>
 
   <script>
-    // جلب بيانات المستخدم من localStorage
-    const name = localStorage.getItem("name") || "مستخدم";
-    const profileImg = localStorage.getItem("profileImg") || "https://via.placeholder.com/150";
+    // Firebase Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyD20R2U6ouZc9WRNAE0fLrTPUviqqX8Pvw",
+      authDomain: "talkgram2.firebaseapp.com",
+      databaseURL: "https://talkgram2-default-rtdb.firebaseio.com",
+      projectId: "talkgram2",
+      storageBucket: "talkgram2.appspot.com",
+      messagingSenderId: "196126389993",
+      appId: "1:196126389993:web:9f549942602c010a602278"
+    };
 
-    document.getElementById("userName").textContent = name;
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-    // إنشاء مثال لمحادثتين
-    const exampleChats = [
-      {
-        name: "أحمد محمد",
-        message: "أهلاً! كيف حالك؟",
-        avatar: "https://randomuser.me/api/portraits/men/32.jpg"
-      },
-      {
-        name: "نورة خالد",
-        message: "تم إرسال الصورة 👍",
-        avatar: "https://randomuser.me/api/portraits/women/45.jpg"
-      },
-      {
-        name: name,
-        message: "أنا هنا! ✋",
-        avatar: profileImg
+    const tabs = ['chats', 'status', 'calls', 'settings'];
+
+    function loadTab(tab) {
+      tabs.forEach(t => {
+        document.getElementById('tab-' + t).classList.remove('active');
+      });
+      document.getElementById('tab-' + tab).classList.add('active');
+
+      if (tab === 'chats') {
+        db.ref('chats/').once('value', snapshot => {
+          const chats = snapshot.val();
+          let content = '<h2>المحادثات</h2>';
+          for (let key in chats) {
+            content += `
+              <div class="chat-box">
+                <div class="chat-name">${chats[key].name}</div>
+                ${chats[key].message}
+              </div>`;
+          }
+          document.getElementById('screen').innerHTML = content;
+        });
+      } else if (tab === 'status') {
+        document.getElementById('screen').innerHTML = `<h2>الحالة</h2><p>لا توجد حالات جديدة حالياً.</p>`;
+      } else if (tab === 'calls') {
+        document.getElementById('screen').innerHTML = `<h2>المكالمات</h2><p>لا توجد مكالمات بعد.</p>`;
+      } else if (tab === 'settings') {
+        document.getElementById('screen').innerHTML = `
+          <h2>الإعدادات</h2>
+          <ul>
+            <li>الملف الشخصي</li>
+            <li>الإشعارات</li>
+            <li>الخصوصية</li>
+          </ul>`;
       }
-    ];
+    }
 
-    const chatList = document.getElementById("chatList");
-
-    exampleChats.forEach(chat => {
-      const div = document.createElement("div");
-      div.className = "chat";
-      div.innerHTML = `
-        <img src="${chat.avatar}" alt="صورة">
-        <div class="info">
-          <div class="name">${chat.name}</div>
-          <div class="last-msg">${chat.message}</div>
-        </div>
-      `;
-      chatList.appendChild(div);
-    });
+    // تحميل تبويب المحادثات افتراضيًا
+    window.onload = function() {
+      loadTab('chats');
+    };
   </script>
-
 </body>
 </html>
