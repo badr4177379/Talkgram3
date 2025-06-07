@@ -1,47 +1,75 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>إضافة معلومات الحساب</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
-      background-color: #111;
+      background-color: #121b22;
       color: white;
       font-family: 'Segoe UI', sans-serif;
-      padding: 20px;
       text-align: center;
+      padding: 40px 20px;
     }
+
+    h1 {
+      color: #00e676;
+      margin-bottom: 30px;
+    }
+
     input, button {
-      display: block;
-      margin: 15px auto;
-      padding: 10px;
       width: 80%;
-      max-width: 300px;
-      border-radius: 5px;
+      padding: 12px;
+      margin: 10px 0;
+      font-size: 16px;
+      border-radius: 8px;
       border: none;
+      outline: none;
     }
+
+    input {
+      background-color: #1f2c34;
+      color: white;
+    }
+
     button {
       background-color: #00c851;
       color: white;
-      font-size: 16px;
       cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #00b140;
     }
   </style>
 </head>
 <body>
-  <h2>أدخل معلوماتك</h2>
-  <input type="text" id="name" placeholder="الاسم الكامل">
-  <input type="file" id="profileImage" accept="image/*">
-  <button onclick="saveProfile()">حفظ</button>
+
+  <h1>معلومات حسابك</h1>
+
+  <input type="text" id="name" placeholder="أدخل اسمك" required />
+  <br>
+  <input type="text" id="profileImg" placeholder="رابط صورتك (اختياري)" />
+  <br>
+  <button onclick="saveProfile()">حفظ ومتابعة</button>
 
   <script>
     function saveProfile() {
-      const name = document.getElementById('name').value;
-      const fileInput = document.getElementById('profileImage');
-      const imageFile = fileInput.files[0];
-      alert("تم حفظ المعلومات (محاكاة)");
+      const name = document.getElementById('name').value.trim();
+      const img = document.getElementById('profileImg').value.trim();
+
+      if (!name) {
+        alert("الرجاء إدخال الاسم");
+        return;
+      }
+
+      localStorage.setItem('name', name);
+      localStorage.setItem('profileImg', img || 'https://via.placeholder.com/150');
+
+      window.location.href = 'chats.html'; // الانتقال بعد الحفظ
     }
   </script>
+
 </body>
 </html>
