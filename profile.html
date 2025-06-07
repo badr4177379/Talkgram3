@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>إضافة معلومات الحساب</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      background-color: #111;
+      color: white;
+      font-family: 'Segoe UI', sans-serif;
+      padding: 20px;
+      text-align: center;
+    }
+    input, button {
+      display: block;
+      margin: 15px auto;
+      padding: 10px;
+      width: 80%;
+      max-width: 300px;
+      border-radius: 5px;
+      border: none;
+    }
+    button {
+      background-color: #00c851;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h2>أدخل معلوماتك</h2>
+  <input type="text" id="name" placeholder="الاسم الكامل">
+  <input type="file" id="profileImage" accept="image/*">
+  <button onclick="saveProfile()">حفظ</button>
+
+  <script>
+    function saveProfile() {
+      const name = document.getElementById('name').value;
+      const fileInput = document.getElementById('profileImage');
+      const imageFile = fileInput.files[0];
+      alert("تم حفظ المعلومات (محاكاة)");
+    }
+  </script>
+</body>
+</html>
